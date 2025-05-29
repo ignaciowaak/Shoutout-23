@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="es">
+<!DOCTYPE html>
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,7 +23,9 @@
   </style>
 </head>
 <body>
-  <h1>Panel de Administración</h1>  <!-- Subir Publicación -->  <div class="section">
+  <h1>Panel de Administración</h1>
+  <!-- Subir Publicación -->
+  <div class="section">
     <h2>Subir Publicación</h2>
     <label>Categoría</label>
     <select id="prodCat">
@@ -41,15 +44,16 @@
     <select id="prodSale">
       <option value="true">Sí</option>
       <option value="false">No</option>
-    </select><input id="prodFileInput" type="file" accept="image/*" style="display:none">
-<button type="button" id="addProdFileBtn">➕ Agregar Imagen</button>
-<div class="preview-list" id="prodPreview"></div>
-<div class="progress-bar" id="prodProgress"><div class="progress-bar-inner" id="prodProgressInner"></div></div>
-
-<button onclick="uploadProduct()">Subir Publicación</button>
-<div id="prodFeedback"></div>
-
-  </div>  <!-- Subir Slider -->  <div class="section">
+    </select>
+    <input id="prodFileInput" type="file" accept="image/*" style="display:none">
+    <button type="button" id="addProdFileBtn">➕ Agregar Imagen</button>
+    <div class="preview-list" id="prodPreview"></div>
+    <div class="progress-bar" id="prodProgress"><div class="progress-bar-inner" id="prodProgressInner"></div></div>
+    <button onclick="uploadProduct()">Subir Publicación</button>
+    <div id="prodFeedback"></div>
+  </div>
+  <!-- Subir Slider -->
+  <div class="section">
     <h2>Subir Imágenes para Slider</h2>
     <input id="sliderInput" type="file" accept="image/*" multiple style="display:none">
     <button type="button" onclick="sliderInput.click()">➕ Agregar Imagen Slider</button>
@@ -57,12 +61,15 @@
     <div class="progress-bar" id="sliderProgress"><div class="progress-bar-inner" id="sliderProgressInner"></div></div>
     <button onclick="uploadSlider()">Subir al Slider</button>
     <div id="sliderFeedback"></div>
-  </div>  <!-- Reservas -->  <div class="section">
+  </div>
+  <!-- Reservas -->
+  <div class="section">
     <h2>Reservas</h2>
     <div id="resList">Cargando reservas...</div>
-  </div>  <script type="module">
+  </div>
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-    import { getDatabase, ref, set, onValue, update, push } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+    import { getDatabase, ref, set, onValue, update, push, get } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
     import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-storage.js";
 
     const firebaseConfig = {
@@ -161,26 +168,50 @@
       resList.innerHTML = '';
       const data = snapshot.val() || {};
       Object.entries(data).forEach(([id, r]) => {
-        const div = document.createElement('div'); div.className='list-item';
+        const div = document.createElement('div');
+        div.className = 'list-item';
         div.innerHTML = `
           <p><strong>Nombre:</strong> ${r.customerName}</p>
           <p><strong>Teléfono:</strong> ${r.customerPhone}</p>
           <p><strong>Email:</strong> ${r.customerEmail}</p>
           <p><strong>Estado:</strong> ${r.status || 'pendiente'}</p>
+          <p class="product-info"><strong>Producto:</strong> Cargando...</p>
         `;
+
+        // Obtener información del producto
+        const productRef = ref(db, `productos/${r.productCategory}/${r.productKey}`);
+        get(productRef).then(productSnapshot => {
+          const productData = productSnapshot.val();
+          const productInfo = div.querySelector('.product-info');
+          if (productData) {
+            productInfo.innerHTML = `
+              <strong>Producto:</strong> ${productData.name}<br>
+              <strong>Descripción:</strong> ${productData.desc || 'Sin descripción'}<br>
+              <strong>Precio:</strong> $${productData.price}<br>
+              <strong>En Oferta:</strong> ${productData.sale ? 'Sí' : 'No'}
+            `;
+          } else {
+            productInfo.textContent = 'Producto no encontrado';
+          }
+        }).catch(error => {
+          console.error('Error al obtener el producto:', error);
+          div.querySelector('.product-info').textContent = 'Error al cargar el producto';
+        });
+
         const btn = document.createElement('button');
-        btn.className='mark-comprado-btn';
-        btn.textContent = r.status==='comprada' ? 'Comprada' : 'Marcar como Comprada';
-        btn.disabled = r.status==='comprada';
+        btn.className = 'mark-comprado-btn';
+        btn.textContent = r.status === 'comprada' ? 'Comprada' : 'Marcar como Comprada';
+        btn.disabled = r.status === 'comprada';
         btn.onclick = async () => {
           await update(ref(db, `reservas/${id}`), { status: 'comprada' });
           await update(ref(db, `productos/${r.productCategory}/${r.productKey}`), { reserved: true });
-          btn.textContent = 'Comprada'; btn.disabled = true;
+          btn.textContent = 'Comprada';
+          btn.disabled = true;
         };
         div.appendChild(btn);
         resList.appendChild(div);
       });
     });
-
-  </script></body>
+  </script>
+</body>
 </html>
