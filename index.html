@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vans Upland — Tienda Oficial</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* Reset + Variables */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --black:#000;
+      --white:#fff;
+      --gray-light:#f5f5f5;
+      --gray-dark:#333;
+      --brand:#ff3f3f;
+      --reserved-bg: #666;
+      --transition:.3s ease;
+      --font: 'Inter', sans-serif;
+    }
+    body { 
+      font-family:var(--font); 
+      color:var(--gray-dark); 
+      background:var(--white); 
+      line-height:1.6; 
+      min-width: 320px; /* Evita que se encoja demasiado */
+    }
+
+    /* Header */
+    header {
+      position: fixed; 
+      top:0; 
+      left:0; 
+      right:0;
+      background:var(--black); 
+      color:var(--white);
+      height:60px; 
+      display:flex; 
+      align-items:center; 
+      justify-content:space-between;
+      padding:0 20px; 
+      z-index:1000;
+    }
+    .logo img { 
+      height: 40px; 
+      width: auto; 
+    }
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--white);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    nav { display:flex; align-items:center; gap:20px; }
+    nav a { 
+      color:var(--white); 
+      font-size:.9rem; 
+      text-transform:uppercase; 
+      position:relative; 
+      text-decoration: none; 
+    }
+    nav a:hover { opacity:.7; }
+
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+      nav {
+        display: none;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: var(--black);
+        flex-direction: column;
+        padding: 20px;
+      }
+      nav.open {
+        display: flex;
+      }
+    }
+
+    /* Dropdown */
+    .has-sub { cursor:pointer; position:relative; }
+    .submenu {
+      position:absolute; 
+      top:100%; 
+      left:0; 
+      background:var(--white); 
+      color:var(--gray-dark);
+      min-width:150px; 
+      display:none; 
+      box-shadow:0 4px 12px rgba(0,0,0,.15);
+      z-index: 1100; 
+      border-top: 2px solid var(--brand);
+    }
+    .submenu a { 
+      display:block; 
+      padding:10px 15px; 
+      white-space:nowrap; 
+      color: var(--gray-dark); 
+      font-size: 0.85rem; 
+    }
+    .submenu a:hover { background-color: var(--gray-light); }
+    .has-sub:hover .submenu { display:block; }
+
+    /* Hero slider */
+    .hero { 
+      position:relative; 
+      overflow:hidden; 
+      height:70vh; 
+      margin-top:60px; 
+      background-color: var(--gray-light); 
+    }
+    .slides { 
+      display:flex; 
+      height:100%; 
+      transition:transform var(--transition); 
+    }
+    .slide {
+      flex-shrink: 0;
+      width: 100%; /* Esto se ajustará en JS */
+      background: center/cover no-repeat;
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      text-align: center; 
+      padding: 20px;
+    }
+    .slide h1 { 
+      color:var(--white); 
+      font-size:clamp(2rem, 5vw, 3.5rem); 
+      text-shadow:2px 2px 8px rgba(0,0,0,.7); 
+    }
+
+    .arrow {
+      position:absolute; 
+      top:50%; 
+      transform:translateY(-50%);
+      background:rgba(0,0,0,.4); 
+      color:var(--white); 
+      width:45px; 
+      height:45px;
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      cursor:pointer;
+      border-radius: 50%; 
+      transition: background-color var(--transition);
+    }
+    .arrow:hover { background:rgba(0,0,0,.7); }
+    .arrow.prev { left:15px; }
+    .arrow.next { right:15px; }
+
+    /* Productos */
+    .products-section-title { 
+      text-align: center; 
+      font-size: 2rem; 
+      margin: 40px 20px 20px; 
+      color: var(--gray-dark); 
+    }
+    .products {
+      max-width:1200px; 
+      margin:0 auto 40px auto; 
+      padding:0 20px;
+      display:grid; 
+      gap:25px; 
+      grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); /* Reducido de 250px a 200px */
+    }
+    .card {
+      position:relative; 
+      border:1px solid #e8e8e8; 
+      overflow:hidden;
+      transition:transform var(--transition), box-shadow var(--transition);
+      display: flex; 
+      flex-direction: column; 
+      background-color: var(--white);
+    }
+    .card:hover { 
+      transform:translateY(-6px); 
+      box-shadow:0 10px 25px rgba(0,0,0,.12); 
+    }
+    .card img { 
+      width:100%; 
+      display:block; 
+      aspect-ratio: 1 / 1; 
+      object-fit: cover; 
+      border-bottom: 1px solid #eee; 
+    }
+    .card .info { 
+      padding:15px; 
+      background:var(--white); 
+      flex-grow: 1; 
+      display: flex; 
+      flex-direction: column; 
+    }
+    .info h3 { 
+      font-size:1.1rem; 
+      margin-bottom:8px; 
+      color: var(--gray-dark); 
+    }
+    .info p { 
+      font-size:.875rem; 
+      color:#555; 
+      margin-bottom:12px; 
+      flex-grow: 1; 
+      min-height: 4.2em; 
+    }
+    .info .price { 
+      font-weight:700; 
+      font-size: 1.15rem; 
+      margin-top:auto; 
+      color: var(--black); 
+    }
+    .badge {
+      position:absolute; 
+      top:12px; 
+      left:12px;
+      background:var(--brand); 
+      color:var(--white);
+      padding:6px 10px; 
+      font-size:.7rem; 
+      text-transform:uppercase; 
+      letter-spacing: .05em;
+      border-radius: 3px; 
+      font-weight: 700;
+    }
+    .badge.reserved { background: var(--reserved-bg); }
+
+    /* Footer */
+    footer {
+      background:var(--black); 
+      color:var(--gray-light); 
+      padding:50px 20px 30px; 
+      margin-top:60px;
+      display:grid; 
+      grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+      gap:30px; 
+      font-size:.9rem;
+    }
+    footer a { color:var(--gray-light); text-decoration: none; }
+    footer a:hover { color: var(--white); text-decoration: underline; }
+    footer .brand { font-weight:700; font-size: 1.2rem; margin-bottom:15px; }
+    footer p { margin-bottom: 8px; }
+    footer .footer-column div:first-child { 
+      font-weight: 700; 
+      margin-bottom: 10px; 
+      text-transform: uppercase; 
+      font-size: 0.95rem;
+    }
+
+    /* Modal Reserva */
+    #modalReserva {
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%;
+      background: rgba(0,0,0,.65); 
+      display: none; 
+      align-items: center;
+      justify-content: center; 
+      z-index: 4000; /* Cambiado de 2000 a 4000 */
+      padding: 15px;
+    }
+    #modalReserva.open { display: flex; }
+    .modal-content-reserva {
+      background: var(--white); 
+      padding: 25px 30px; 
+      border-radius: 8px;
+      width: 100%; 
+      max-width: 420px; 
+      position: relative;
+      box-shadow: 0 5px 20px rgba(0,0,0,.3);
+    }
+    .modal-content-reserva .close-reserva {
+      position: absolute; 
+      top: 10px; 
+      right: 15px; 
+      cursor: pointer;
+      font-size: 2rem; 
+      color: #aaa; 
+      line-height: 1;
+    }
+    .modal-content-reserva .close-reserva:hover { color: var(--black); }
+    .modal-content-reserva h2 {
+      margin-top: 0; 
+      margin-bottom: 15px; 
+      font-size: 1.6rem; 
+      color: var(--gray-dark);
+    }
+    .modal-content-reserva p { 
+      font-size: .9rem; 
+      color: #555; 
+      margin-bottom: 20px; 
+      line-height: 1.5; 
+    }
+    .modal-content-reserva label {
+      display: block; 
+      margin-top: 15px; 
+      margin-bottom: 5px;
+      font-size: .9rem; 
+      font-weight: 500; 
+      color: var(--gray-dark);
+    }
+    .modal-content-reserva input[type="text"],
+    .modal-content-reserva input[type="tel"],
+    .modal-content-reserva input[type="email"] {
+      width: 100%; 
+      padding: 12px; 
+      border: 1px solid #ccc;
+      border-radius: 4px; 
+      font-size: .95rem;
+    }
+    .modal-content-reserva button[type="submit"] {
+      margin-top: 25px; 
+      width: 100%; 
+      padding: 12px;
+      background: var(--black); 
+      color: var(--white); 
+      border: none;
+      border-radius: 4px; 
+      cursor: pointer; 
+      font-size: 1rem;
+      font-weight: 500; 
+      transition: background-color var(--transition);
+    }
+    .modal-content-reserva button[type="submit"]:hover { background: #333; }
+
+    /* Modal Detalle Producto */
+    #modalDetalle {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      padding: 20px;
+    }
+    #modalDetalle.open { display: flex; }
+    .modal-contenido-detalle {
+      position: relative;
+      background: var(--white);
+      max-width: 800px;
+      width: 100%;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-contenido-detalle .close-detalle {
+      position: absolute;
+      top: 10px; right: 15px;
+      font-size: 2rem;
+      color: #aaa;
+      cursor: pointer;
+      z-index: 10;
+    }
+    .modal-contenido-detalle .close-detalle:hover { color: var(--black); }
+    .detalle-imagen-grande {
+      position: relative;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 450px;
+    }
+    .detalle-imagen-grande img {
+      max-width: 100%; max-height: 100%;
+      object-fit: contain;
+    }
+    .detalle-flecha {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.5);
+      color: var(--white);
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.5rem;
+      z-index: 5;
+    }
+    .detalle-flecha.prev { left: 10px; }
+    .detalle-flecha.next { right: 10px; }
+    .miniaturas {
+      display: flex;
+      gap: 8px;
+      padding: 12px;
+      background: var(--gray-light);
+      overflow-x: auto;
+    }
+    .miniaturas img {
+      width: 60px; height: 60px;
+      object-fit: cover;
+      cursor: pointer;
+      border: 2px solid transparent;
+      border-radius: 4px;
+      transition: border var(--transition);
+    }
+    .miniaturas img.selected {
+      border-color: var(--brand);
+    }
+
+    /* Asegurar visibilidad en pantallas pequeñas sin cambiar diseño */
+    html, body { overflow-x: auto; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <img src="0.png" alt="Vans Upland Logo" style="height: 70px; width: auto;">
+    </div>
+    <button class="menu-toggle" aria-label="Toggle menu">☰</button>
+    <nav id="menu" class="hidden">
+      <div class="has-sub">
+        Hombre
+        <div class="submenu">
+          <a href="#hombre">Calzado</a>
+          <a href="#hombre">Ropa</a>
+          <a href="#hombre">Accesorios</a>
+        </div>
+      </div>
+      <div class="has-sub">
+        Mujer
+        <div class="submenu">
+          <a href="#mujer">Calzado</a>
+          <a href="#mujer">Ropa</a>
+          <a href="#mujer">Accesorios</a>
+        </div>
+      </div>
+      <a href="#ninos">Niños</a>
+      <a href="#ofertas">Ofertas</a>
+      <a href="#" style="margin-left:auto;">🛒 Carrito (0)</a>
+    </nav>
+  </header>
+
+  <!-- Hero Slider -->
+  <section class="hero">
+    <div class="slides" id="slidesContainer"></div>
+    <div class="arrow prev" id="prevSlide">❮</div>
+    <div class="arrow next" id="nextSlide">❯</div>
+  </section>
+
+  <!-- Productos -->
+  <h2 class="products-section-title">Nuestros Productos</h2>
+  <section class="products" id="productsContainer"></section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-column">
+      <div class="brand">Vans Upland</div>
+      <p>© <span id="currentYear"></span> Vans Upland Argentina. Todos los derechos reservados.</p>
+      <p>Diseño inspirado en Vans.</p>
+    </div>
+    <div class="footer-column">
+      <div>Cliente</div>
+      <a href="#">Ayuda y Contacto</a><br>
+      <a href="#">Preguntas Frecuentes</a><br>
+      <a href="#">Términos y Condiciones</a><br>
+      <a href="#">Política de Privacidad</a>
+    </div>
+    <div class="footer-column">
+      <div>Nosotros</div>
+      <a href="#">Nuestra Historia</a><br>
+      <a href="#">Blog</a><br>
+      <a href="#">Tiendas</a><br>
+      <a href="#">Trabaja con Nosotros</a>
+    </div>
+    <div class="footer-column">
+      <div>Redes Sociales</div>
+      <a href="#" target="_blank">Instagram</a><br>
+      <a href="#" target="_blank">Facebook</a><br>
+      <a href="#" target="_blank">YouTube</a>
+    </div>
+  </footer>
+
+  <!-- Modal Reserva -->
+  <div id="modalReserva">
+    <div class="modal-content-reserva">
+      <span class="close-reserva" id="closeModalReservaButton">×</span>
+      <h2 id="modalReservaTitle">Reservar Producto</h2>
+      <p>Al reservar este producto, nos contactaremos contigo para confirmar los detalles y coordinar el pago/envío.</p>
+      <form id="reservationForm">
+        <input type="hidden" id="resProductCategory">
+        <input type="hidden" id="resProductKey">
+        <input type="hidden" id="resProductNameInput">
+        <label for="resName">Nombre Completo:</label>
+        <input type="text" id="resName" required>
+        <label for="resPhone">Teléfono (con código de área):</label>
+        <input type="tel" id="resPhone" required>
+        <label for="resEmail">Correo Electrónico:</label>
+        <input type="email" id="resEmail" required>
+        <button type="submit">Confirmar Reserva</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Detalle Producto -->
+  <div id="modalDetalle">
+    <div class="modal-contenido-detalle">
+      <span class="close-detalle" id="closeDetalle">×</span>
+      <div class="detalle-imagen-grande" id="detalleImagenGrande">
+        <div class="detalle-flecha prev" id="detallePrev">❮</div>
+        <img src="" alt="Detalle Producto" id="detalleImagen">
+        <div class="detalle-flecha next" id="detalleNext">❯</div>
+      </div>
+      <div class="miniaturas" id="miniaturasContainer"></div>
+      <div class="detalle-info" style="padding: 20px;">
+        <h3 id="detalleNombre" style="margin-bottom:8px;"></h3>
+        <p id="detalleDesc" style="margin-bottom:12px;"></p>
+        <div id="detallePrice" style="font-weight:700; font-size:1.2rem;"></div>
+        <input type="hidden" id="detalleCategory" value="">
+        <input type="hidden" id="detalleKey" value="">
+        <button id="reserveButton" style="margin-top:15px; padding:10px 15px; background:var(--brand); color:var(--white); border:none; border-radius:4px; cursor:pointer;">Reservar este producto</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    // Importaciones de Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+    import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+
+    // Configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyAhz1XoprhhrHyYfuAdIYGMJxm5UsDO-4",
+      authDomain: "the-pic-c437e.firebaseapp.com",
+      databaseURL: "https://the-pic-c437e-default-rtdb.firebaseio.com",
+      projectId: "the-pic-c437e",
+      storageBucket: "the-pic-c437e.appspot.com",
+      messagingSenderId: "750954597180",
+      appId: "1:750954597180:web:fc586d73d852ed5e17ec39"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Año actual en footer
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    /* ===== HERO SLIDER ===== */
+    const slidesEl = document.getElementById('slidesContainer');
+    const nextSlideButton = document.getElementById('nextSlide');
+    const prevSlideButton = document.getElementById('prevSlide');
+    let currentSlideIndex = 0;
+    let totalSlides = 0;
+    let slideAutoPlayInterval;
+
+    function renderSlides(slideData) {
+      slidesEl.innerHTML = '';
+      let loaded = Array.isArray(slideData) ? slideData : (slideData ? Object.values(slideData) : []);
+      totalSlides = loaded.length;
+      if (totalSlides > 0) {
+        slidesEl.style.width = `${totalSlides * 100}%`;
+        loaded.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'slide';
+          div.style.backgroundImage = `url('${item.url}')`;
+          div.style.width = `${100 / totalSlides}%`; // Ajuste para que cada slide ocupe el espacio correcto
+          div.innerHTML = `<h1>${item.title || 'Nueva Colección'}</h1>`;
+          slidesEl.appendChild(div);
+        });
+        updateSliderTransform();
+        startSliderAutoplay();
+      } else {
+        slidesEl.style.width = '100%';
+        slidesEl.innerHTML = `<div class="slide" style="background-color: var(--gray-dark); width: 100%;"><h1>No hay slides disponibles</h1></div>`;
+      }
+    }
+    function updateSliderTransform() {
+      slidesEl.style.transform = `translateX(-${currentSlideIndex * (100 / totalSlides)}%)`;
+    }
+    function moveSlide(dir) {
+      currentSlideIndex = (currentSlideIndex + dir + totalSlides) % totalSlides;
+      updateSliderTransform();
+    }
+    function startSliderAutoplay() {
+      clearInterval(slideAutoPlayInterval);
+      if (totalSlides > 1) slideAutoPlayInterval = setInterval(() => moveSlide(1), 5000);
+    }
+    nextSlideButton.addEventListener('click', () => { moveSlide(1); startSliderAutoplay(); });
+    prevSlideButton.addEventListener('click', () => { moveSlide(-1); startSliderAutoplay(); });
+    onValue(ref(db, 'slider'), snap => {
+      const data = snap.val();
+      console.log("Datos del slider:", data); // Para depurar
+      renderSlides(data);
+    }, err => {
+      console.error("Error cargando slides:", err);
+      slidesEl.innerHTML = `<div class="slide" style="background-color: var(--gray-dark); width: 100%;"><h1>Error al cargar slides</h1></div>`;
+    });
+
+    /* ===== PRODUCTOS + MODAL DETALLE ===== */
+    const productsContainer = document.getElementById('productsContainer');
+    const categories = ['Hombre','Mujer','Niños','Ofertas'];
+    const renderedCards = {};
+
+    // Modal detalle refs
+    const modalDetalle = document.getElementById('modalDetalle');
+    const detalleImagen = document.getElementById('detalleImagen');
+    const detalleNombre = document.getElementById('detalleNombre');
+    const detalleDesc   = document.getElementById('detalleDesc');
+    const detallePrice  = document.getElementById('detallePrice');
+    const detallePrev   = document.getElementById('detallePrev');
+    const detalleNext   = document.getElementById('detalleNext');
+    const miniaturasContainer = document.getElementById('miniaturasContainer');
+    const closeDetalle = document.getElementById('closeDetalle');
+    let detalleImages = [], currentDetalleIndex = 0;
+
+    function openDetalle(item, category, key, reserved) {
+      detalleImages = Array.isArray(item.images) && item.images.length
+        ? item.images
+        : [ item.url || 'https://via.placeholder.com/800' ];
+      currentDetalleIndex = 0;
+      detalleNombre.textContent = item.name;
+      detalleDesc.textContent   = item.desc;
+      detallePrice.textContent  = item.price ? '$'+Number(item.price).toLocaleString('es-AR') : 'Consultar';
+      document.getElementById('detalleCategory').value = category;
+      document.getElementById('detalleKey').value = key;
+      renderDetalle();
+      modalDetalle.classList.add('open');
+      const reserveButton = document.getElementById('reserveButton');
+      if (reserved) {
+        reserveButton.style.display = 'none';
+      } else {
+        reserveButton.style.display = 'block';
+        reserveButton.onclick = () => {
+          const name = document.getElementById('detalleNombre').textContent;
+          openModalReserva(category, key, name);
+        };
+      }
+    }
+    function renderDetalle() {
+      detalleImagen.src = detalleImages[currentDetalleIndex];
+      miniaturasContainer.innerHTML = '';
+      detalleImages.forEach((src, idx) => {
+        const img = document.createElement('img');
+        img.src = src;
+        if (idx === currentDetalleIndex) img.classList.add('selected');
+        img.addEventListener('click', () => { currentDetalleIndex = idx; renderDetalle(); });
+        miniaturasContainer.appendChild(img);
+      });
+    }
+    detallePrev.addEventListener('click', () => {
+      currentDetalleIndex = (currentDetalleIndex - 1 + detalleImages.length) % detalleImages.length;
+      renderDetalle();
+    });
+    detalleNext.addEventListener('click', () => {
+      currentDetalleIndex = (currentDetalleIndex + 1) % detalleImages.length;
+      renderDetalle();
+    });
+    closeDetalle.addEventListener('click', () => modalDetalle.classList.remove('open'));
+    modalDetalle.addEventListener('click', e => {
+      if (e.target === modalDetalle) modalDetalle.classList.remove('open');
+    });
+
+    function renderSingleProduct(category, key, item) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      let badge = '';
+      if (item.reserved) badge = '<div class="badge reserved">Comprado</div>';
+      else if (item.sale) badge = '<div class="badge">Sale</div>';
+      const imgSrc = Array.isArray(item.images) && item.images.length ? item.images[0] : item.url || 'https://via.placeholder.com/300';
+      card.innerHTML = `
+        ${badge}
+        <img src="${imgSrc}" alt="${item.name}">
+        <div class="info">
+          <h3>${item.name||'Producto'}</h3>
+          <p>${item.desc||'Descripción no disponible.'}</p>
+          <div class="price">${item.price? '$'+Number(item.price).toLocaleString('es-AR'):'Consultar'}</div>
+        </div>
+      `;
+      if (!item.reserved) {
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', () => openDetalle(item, category, key, item.reserved));
+      }
+      return card;
+    }
+
+    categories.forEach(cat => {
+      onValue(ref(db, `productos/${cat}`), snap => {
+        const data = snap.val() || {};
+        Object.keys(data).forEach(key => {
+          const item = data[key];
+          const id = `${cat}-${key}`;
+          const newCard = renderSingleProduct(cat, key, item);
+          if (renderedCards[id]) {
+            productsContainer.replaceChild(newCard, renderedCards[id]);
+          } else {
+            productsContainer.appendChild(newCard);
+          }
+          renderedCards[id] = newCard;
+        });
+      }, err => console.error(`Error cargando productos de ${cat}:`, err));
+    });
+
+    /* ===== MODAL RESERVA ===== */
+    const modalReserva = document.getElementById('modalReserva');
+    const closeModalReservaButton = document.getElementById('closeModalReservaButton');
+    const reservationForm = document.getElementById('reservationForm');
+    const modalReservaTitleEl = document.getElementById('modalReservaTitle');
+    const resProductCategoryInput = document.getElementById('resProductCategory');
+    const resProductKeyInput = document.getElementById('resProductKey');
+    const resProductNameInputHidden = document.getElementById('resProductNameInput');
+    const resNameInput = document.getElementById('resName');
+    const resPhoneInput = document.getElementById('resPhone');
+    const resEmailInput = document.getElementById('resEmail');
+
+    window.openModalReserva = function(category, productKey, productName) {
+      modalDetalle.classList.remove('open'); // Cerrar modal de detalle
+      modalReservaTitleEl.innerText = `Reservar: ${productName}`;
+      resProductCategoryInput.value = category;
+      resProductKeyInput.value = productKey;
+      resProductNameInputHidden.value = productName;
+      reservationForm.reset();
+      modalReserva.classList.add('open');
+    };
+
+    function closeModalReserva() {
+      modalReserva.classList.remove('open');
+    }
+    closeModalReservaButton.onclick = closeModalReserva;
+    modalReserva.addEventListener('click', e => {
+      if (e.target === modalReserva) closeModalReserva();
+    });
+
+    reservationForm.onsubmit = async function(event) {
+      event.preventDefault();
+      const productCategory = resProductCategoryInput.value;
+      const productKey = resProductKeyInput.value;
+      const productName = resProductNameInputHidden.value;
+      const customerName = resNameInput.value.trim();
+      const customerPhone = resPhoneInput.value.trim();
+      const customerEmail = resEmailInput.value.trim();
+
+      if (!customerName || !customerPhone || !customerEmail) {
+        alert('Por favor, completa todos los campos: Nombre, Teléfono y Correo.');
+        return;
+      }
+      if (!customerEmail.includes('@') || !customerEmail.includes('.')) {
+        alert('Por favor, ingresa un correo electrónico válido.');
+        return;
+      }
+      if (!/^[0-9\s+()-]*$/.test(customerPhone)) {
+        alert('Por favor, ingresa un número de teléfono válido.');
+        return;
+      }
+
+      const submitButton = reservationForm.querySelector('button[type="submit"]');
+      submitButton.disabled = true;
+
+      try {
+        await push(ref(db, 'reservas/'), {
+          productCategory,
+          productKey,
+          productName,
+          customerName,
+          customerPhone,
+          customerEmail,
+          timestamp: Date.now(),
+          status: 'pendiente'
+        });
+        closeModalReserva();
+        alert('¡Reserva solicitada con éxito! Nos pondremos en contacto contigo pronto.');
+      } catch (error) {
+        console.error("Error al guardar la reserva:", error);
+        alert('Hubo un error al procesar tu reserva. Por favor, intenta de nuevo.');
+      } finally {
+        submitButton.disabled = false;
+      }
+    };
+
+    /* ===== MENÚ HAMBURGUESA ===== */
+    const menuToggle = document.querySelector('.menu-toggle');
+    const menu = document.getElementById('menu');
+
+    menuToggle.addEventListener('click', () => {
+      menu.classList.toggle('open');
+    });
+  </script>
+</body>
+</html>
