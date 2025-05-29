@@ -2,656 +2,76 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Vans Upland — Tienda Oficial</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Administración</title>
   <style>
-    /* Reset + Variables */
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-    :root {
-      --black:#000;
-      --white:#fff;
-      --gray-light:#f5f5f5;
-      --gray-dark:#333;
-      --brand:#ff3f3f;
-      --reserved-bg: #666;
-      --transition:.3s ease;
-      --font: 'Inter', sans-serif;
-    }
-    body { 
-      font-family:var(--font); 
-      color:var(--gray-dark); 
-      background:var(--white); 
-      line-height:1.6; 
-      min-width: 320px; /* Evita que se encoja demasiado */
-    }
-
-    /* Header */
-    header {
-      position: fixed; 
-      top:0; 
-      left:0; 
-      right:0;
-      background:var(--black); 
-      color:var(--white);
-      height:60px; 
-      display:flex; 
-      align-items:center; 
-      justify-content:space-between;
-      padding:0 20px; 
-      z-index:1000;
-    }
-    .logo img { 
-      height: 40px; 
-      width: auto; 
-    }
-    .menu-toggle {
-      display: none;
-      background: none;
-      border: none;
-      color: var(--white);
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-    nav { display:flex; align-items:center; gap:20px; }
-    nav a { 
-      color:var(--white); 
-      font-size:.9rem; 
-      text-transform:uppercase; 
-      position:relative; 
-      text-decoration: none; 
-    }
-    nav a:hover { opacity:.7; }
-
-    @media (max-width: 768px) {
-      .menu-toggle {
-        display: block;
-      }
-      nav {
-        display: none;
-        position: absolute;
-        top: 60px;
-        left: 0;
-        right: 0;
-        background: var(--black);
-        flex-direction: column;
-        padding: 20px;
-      }
-      nav.open {
-        display: flex;
-      }
-    }
-
-    /* Dropdown */
-    .has-sub { cursor:pointer; position:relative; }
-    .submenu {
-      position:absolute; 
-      top:100%; 
-      left:0; 
-      background:var(--white); 
-      color:var(--gray-dark);
-      min-width:150px; 
-      display:none; 
-      box-shadow:0 4px 12px rgba(0,0,0,.15);
-      z-index: 1100; 
-      border-top: 2px solid var(--brand);
-    }
-    .submenu a { 
-      display:block; 
-      padding:10px 15px; 
-      white-space:nowrap; 
-      color: var(--gray-dark); 
-      font-size: 0.85rem; 
-    }
-    .submenu a:hover { background-color: var(--gray-light); }
-    .has-sub:hover .submenu { display:block; }
-
-    /* Hero slider */
-    .hero { 
-      position:relative; 
-      overflow:hidden; 
-      height:70vh; 
-      margin-top:60px; 
-      background-color: var(--gray-light); 
-    }
-    .slides { 
-      display:flex; 
-      height:100%; 
-      transition:transform var(--transition); 
-    }
-    .slide {
-      flex-shrink: 0;
-      width: 100%; /* Esto se ajustará en JS */
-      background: center/cover no-repeat;
-      display:flex; 
-      align-items:center; 
-      justify-content:center; 
-      text-align: center; 
-      padding: 20px;
-    }
-    .slide h1 { 
-      color:var(--white); 
-      font-size:clamp(2rem, 5vw, 3.5rem); 
-      text-shadow:2px 2px 8px rgba(0,0,0,.7); 
-    }
-
-    .arrow {
-      position:absolute; 
-      top:50%; 
-      transform:translateY(-50%);
-      background:rgba(0,0,0,.4); 
-      color:var(--white); 
-      width:45px; 
-      height:45px;
-      display:flex; 
-      align-items:center; 
-      justify-content:center; 
-      cursor:pointer;
-      border-radius: 50%; 
-      transition: background-color var(--transition);
-    }
-    .arrow:hover { background:rgba(0,0,0,.7); }
-    .arrow.prev { left:15px; }
-    .arrow.next { right:15px; }
-
-    /* Productos */
-    .products-section-title { 
-      text-align: center; 
-      font-size: 2rem; 
-      margin: 40px 20px 20px; 
-      color: var(--gray-dark); 
-    }
-    .products {
-      max-width:1200px; 
-      margin:0 auto 40px auto; 
-      padding:0 20px;
-      display:grid; 
-      gap:25px; 
-      grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); /* Reducido de 250px a 200px */
-    }
-    .card {
-      position:relative; 
-      border:1px solid #e8e8e8; 
-      overflow:hidden;
-      transition:transform var(--transition), box-shadow var(--transition);
-      display: flex; 
-      flex-direction: column; 
-      background-color: var(--white);
-    }
-    .card:hover { 
-      transform:translateY(-6px); 
-      box-shadow:0 10px 25px rgba(0,0,0,.12); 
-    }
-    .card img { 
-      width:100%; 
-      display:block; 
-      aspect-ratio: 1 / 1; 
-      object-fit: cover; 
-      border-bottom: 1px solid #eee; 
-    }
-    .card .info { 
-      padding:15px; 
-      background:var(--white); 
-      flex-grow: 1; 
-      display: flex; 
-      flex-direction: column; 
-    }
-    .info h3 { 
-      font-size:1.1rem; 
-      margin-bottom:8px; 
-      color: var(--gray-dark); 
-    }
-    .info p { 
-      font-size:.875rem; 
-      color:#555; 
-      margin-bottom:12px; 
-      flex-grow: 1; 
-      min-height: 4.2em; 
-    }
-    .info .price { 
-      font-weight:700; 
-      font-size: 1.15rem; 
-      margin-top:auto; 
-      color: var(--black); 
-    }
-    .badge {
-      position:absolute; 
-      top:12px; 
-      left:12px;
-      background:var(--brand); 
-      color:var(--white);
-      padding:6px 10px; 
-      font-size:.7rem; 
-      text-transform:uppercase; 
-      letter-spacing: .05em;
-      border-radius: 3px; 
-      font-weight: 700;
-    }
-    .badge.reserved { background: var(--reserved-bg); }
-
-    /* Footer */
-    footer {
-      background:var(--black); 
-      color:var(--gray-light); 
-      padding:50px 20px 30px; 
-      margin-top:60px;
-      display:grid; 
-      grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
-      gap:30px; 
-      font-size:.9rem;
-    }
-    footer a { color:var(--gray-light); text-decoration: none; }
-    footer a:hover { color: var(--white); text-decoration: underline; }
-    footer .brand { font-weight:700; font-size: 1.2rem; margin-bottom:15px; }
-    footer p { margin-bottom: 8px; }
-    footer .footer-column div:first-child { 
-      font-weight: 700; 
-      margin-bottom: 10px; 
-      text-transform: uppercase; 
-      font-size: 0.95rem;
-    }
-
-    /* Modal Reserva */
-    #modalReserva {
-      position: fixed; 
-      top: 0; 
-      left: 0; 
-      width: 100%; 
-      height: 100%;
-      background: rgba(0,0,0,.65); 
-      display: none; 
-      align-items: center;
-      justify-content: center; 
-      z-index: 4000; /* Cambiado de 2000 a 4000 */
-      padding: 15px;
-    }
-    #modalReserva.open { display: flex; }
-    .modal-content-reserva {
-      background: var(--white); 
-      padding: 25px 30px; 
-      border-radius: 8px;
-      width: 100%; 
-      max-width: 420px; 
-      position: relative;
-      box-shadow: 0 5px 20px rgba(0,0,0,.3);
-    }
-    .modal-content-reserva .close-reserva {
-      position: absolute; 
-      top: 10px; 
-      right: 15px; 
-      cursor: pointer;
-      font-size: 2rem; 
-      color: #aaa; 
-      line-height: 1;
-    }
-    .modal-content-reserva .close-reserva:hover { color: var(--black); }
-    .modal-content-reserva h2 {
-      margin-top: 0; 
-      margin-bottom: 15px; 
-      font-size: 1.6rem; 
-      color: var(--gray-dark);
-    }
-    .modal-content-reserva p { 
-      font-size: .9rem; 
-      color: #555; 
-      margin-bottom: 20px; 
-      line-height: 1.5; 
-    }
-    .modal-content-reserva label {
-      display: block; 
-      margin-top: 15px; 
-      margin-bottom: 5px;
-      font-size: .9rem; 
-      font-weight: 500; 
-      color: var(--gray-dark);
-    }
-    .modal-content-reserva input[type="text"],
-    .modal-content-reserva input[type="tel"],
-    .modal-content-reserva input[type="email"] {
-      width: 100%; 
-      padding: 12px; 
-      border: 1px solid #ccc;
-      border-radius: 4px; 
-      font-size: .95rem;
-    }
-    .modal-content-reserva button[type="submit"] {
-      margin-top: 25px; 
-      width: 100%; 
-      padding: 12px;
-      background: var(--black); 
-      color: var(--white); 
-      border: none;
-      border-radius: 4px; 
-      cursor: pointer; 
-      font-size: 1rem;
-      font-weight: 500; 
-      transition: background-color var(--transition);
-    }
-    .modal-content-reserva button[type="submit"]:hover { background: #333; }
-
-    /* Modal Detalle Producto */
-    #modalDetalle {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 3000;
-      padding: 20px;
-    }
-    #modalDetalle.open { display: flex; }
-    .modal-contenido-detalle {
-      position: relative;
-      background: var(--white);
-      max-width: 800px;
-      width: 100%;
-      border-radius: 8px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-    .modal-contenido-detalle .close-detalle {
-      position: absolute;
-      top: 10px; right: 15px;
-      font-size: 2rem;
-      color: #aaa;
-      cursor: pointer;
-      z-index: 10;
-    }
-    .modal-contenido-detalle .close-detalle:hover { color: var(--black); }
-    .detalle-imagen-grande {
-      position: relative;
-      background: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 450px;
-    }
-    .detalle-imagen-grande img {
-      max-width: 100%; max-height: 100%;
-      object-fit: contain;
-    }
-    .detalle-flecha {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(0,0,0,0.5);
-      color: var(--white);
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 1.5rem;
-      z-index: 5;
-    }
-    .detalle-flecha.prev { left: 10px; }
-    .detalle-flecha.next { right: 10px; }
-    .miniaturas {
-      display: flex;
-      gap: 8px;
-      padding: 12px;
-      background: var(--gray-light);
-      overflow-x: auto;
-    }
-    .miniaturas img {
-      width: 60px; height: 60px;
-      object-fit: cover;
-      cursor: pointer;
-      border: 2px solid transparent;
-      border-radius: 4px;
-      transition: border var(--transition);
-    }
-    .miniaturas img.selected {
-      border-color: var(--brand);
-    }
-
-    /* Asegurar visibilidad en pantallas pequeñas sin cambiar diseño */
-    html, body { overflow-x: auto; }
-    
-    
-    
-    
-    
-    
-    
-    .promo-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(9843, 0, 0, 1.9); /* Fondo oscuro semi-transparente */
-    display: flex; /* Usar flexbox para centrar el contenido */
-    justify-content: center; /* Centrar horizontalmente */
-    align-items: center; /* Centrar verticalmente */
-    z-index: 2000; /* Asegurarse de que esté por encima de todo */
-    visibility: hidden; /* Inicialmente invisible */
-    opacity: 0; /* Inicialmente transparente */
-    transition: opacity 1s ease; /* Transición suave al mostrar/ocultar */
-}
-
-.promo-overlay.visible {
-    visibility: visible;
-    opacity: 1;
-}
-
-.promo-content {
-    position: relative; /* Para posicionar la cruz de cierre */
-    background: var(--dark-matte); /* Fondo del pop-up */
-    color: var(--text-color-light);
-    padding: 3.5rem;
-    border-radius: 20px;
-    max-width: 90%; /* Ancho máximo en pantallas pequeñas */
-    width: 470px; /* Ancho deseado en pantallas más grandes */
-    text-align: center;
-    box-shadow: 0 40px 32px var(--glass-shadow);
-    transform: scale(0.9); /* Pequeña animación inicial */
-    transition: transform 0.3s ease;
-}
-
-.promo-overlay.visible .promo-content {
-    transform: scale(1.2); /* Escala normal al ser visible */
-}
-
-
-.promo-content h3 {
-    color: var(--light-yellow); /* Color del título de la promo */
-    margin-top: 0;
-    margin-bottom: 0.9rem;
-    font-size: 1rem;
-}
-
-.promo-content p {
-    margin-bottom: 1.5rem;
-    font-size: 2rem;
-}
-
-.promo-img {
-    max-width: 100%; /* La imagen no excede el ancho del contenedor */
-    height: auto;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
-
-.promo-close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 80px;
-    color: white;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
-    line-height: 1; /* Alineación vertical del símbolo */
-    transition: color 0.2s ease, opacity 0.2s ease;
-    opacity: 0.5; /* Inicialmente menos visible/activo */
-    pointer-events: none; /* Inicialmente no interactuable */
-}
-
-.promo-close-btn.active {
-    opacity: 1; /* Más visible cuando está activo */
-    pointer-events: auto; /* Se vuelve interactuable */
-}
-
-.promo-close-btn:hover.active {
-    color: var(--light-yellow); /* Cambio de color al pasar el ratón (solo si está activo) */
-}
-
-/* Media query para ajustar el tamaño del pop-up en pantallas muy pequeñas */
-@media (max-width: 480px) {
-    .promo-content {
-        padding: 1rem;
-        width: 95%;
-    }
-     .promo-content h3 { font-size: 1.3rem; }
-     .promo-content p { font-size: 0.9rem; }
-     .promo-close-btn { font-size: 20px; top: 5px; right: 5px; }
-}
-
-.promo-content h3 {
-  color: white; /* Cambia a cualquier color que desees */
-}
-
-.promo-content p {
-  color: white;
-}
+    body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
+    .section { background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    h1,h2 { text-align: center; color: #333; }
+    input, select, button { width: 100%; padding: 10px; margin-top: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+    button { background: #000; color: #fff; border: none; cursor: pointer; margin-top: 15px; transition: background .3s; }
+    button:hover { background: #333; }
+    .error { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; text-align: center; }
+    .success { background: #d4edda; color: #155724; padding: 10px; border-radius: 4px; text-align: center; }
+    .preview-list { margin-top: 10px; }
+    .preview-list div { background: #eee; padding: 8px; margin: 5px 0; border-radius: 4px; }
+    .progress-bar { width: 100%; background: #ccc; border-radius: 4px; overflow: hidden; margin-top: 10px; display: none; }
+    .progress-bar-inner { height: 10px; width: 0; background: #28a745; }
+    .list-item { padding: 15px; background: #fafafa; margin-bottom: 10px; border-radius: 4px; border-bottom: 1px solid #eee; }
+    .mark-comprado-btn { background: #28a745; color: #fff; padding: 8px; border: none; border-radius: 4px; cursor: pointer; }
+    .mark-comprado-btn:disabled { background: #ccc; cursor: not-allowed; }
   </style>
 </head>
 <body>
-
-  <!-- Header -->
-  <header>
-    <div class="logo">
-      <img src="0.png" alt="Vans Upland Logo" style="height: 70px; width: auto;">
-    </div>
-    <button class="menu-toggle" aria-label="Toggle menu">☰</button>
-    <nav id="menu" class="hidden">
-      <div class="has-sub">
-        Hombre
-        <div class="submenu">
-          <a href="#hombre">Calzado</a>
-          <a href="#hombre">Ropa</a>
-          <a href="#hombre">Accesorios</a>
-        </div>
-      </div>
-      <div class="has-sub">
-        Mujer
-        <div class="submenu">
-          <a href="#mujer">Calzado</a>
-          <a href="#mujer">Ropa</a>
-          <a href="#mujer">Accesorios</a>
-        </div>
-      </div>
-      <a href="#ninos">Niños</a>
-      <a href="#ofertas">Ofertas</a>
-      <a href="#" style="margin-left:auto;">🛒 Carrito (0)</a>
-    </nav>
-  </header>
-
-  <!-- Hero Slider -->
-  <section class="hero">
-    <div class="slides" id="slidesContainer"></div>
-    <div class="arrow prev" id="prevSlide">❮</div>
-    <div class="arrow next" id="nextSlide">❯</div>
-  </section>
-
-  <!-- Productos -->
-  <h2 class="products-section-title">Nuestros Productos</h2>
-  <section class="products" id="productsContainer"></section>
-
-  <!-- Footer -->
-  <footer>
-    <div class="footer-column">
-      <div class="brand">Vans Upland</div>
-      <p>© <span id="currentYear"></span> Shout out Argentina. Todos los derechos reservados.</p>
-      <p>Feria de ropa para cumplir un sueño.</p>
-    </div>
-    <div class="footer-column">
-      <div>Cliente</div>
-      <a href="#">Ayuda y Contacto</a><br>
-    <!--  <a href="#">Preguntas Frecuentes</a><br>
-      <a href="#">Términos y Condiciones</a><br>
-      <a href="#">Política de Privacidad</a>
-    </div>
-    <div class="footer-column">
-      <div>Nosotros</div>
-      <a href="#">Nuestra Historia</a><br>
-      <a href="#">Blog</a><br>
-      <a href="#">Tiendas</a><br>
-      <a href="#">Trabaja con Nosotros</a>
-    </div>-->
-    <div class="footer-column">
-      <div>Redes Sociales</div>
-      <a href="#" target="_blank">Instagram</a><br>
-    <!--  <a href="#" target="_blank">Facebook</a><br>
-      <a href="#" target="_blank">YouTube</a>-->
-    </div>
-  </footer>
-
-  <!-- Modal Reserva -->
-  <div id="modalReserva">
-    <div class="modal-content-reserva">
-      <span class="close-reserva" id="closeModalReservaButton">×</span>
-      <h2 id="modalReservaTitle">Reservar Producto</h2>
-      <p>Al reservar este producto, nos contactaremos contigo para confirmar los detalles y coordinar el pago/envío.</p>
-      <form id="reservationForm">
-        <input type="hidden" id="resProductCategory">
-        <input type="hidden" id="resProductKey">
-        <input type="hidden" id="resProductNameInput">
-        <label for="resName">Nombre Completo:</label>
-        <input type="text" id="resName" required>
-        <label for="resPhone">Teléfono (con código de área):</label>
-        <input type="tel" id="resPhone" required>
-        <label for="resEmail">Correo Electrónico:</label>
-        <input type="email" id="resEmail" required>
-        <button type="submit">Confirmar Reserva</button>
-      </form>
-    </div>
+  <h1>Panel de Administración</h1>
+  <!-- Subir Publicación -->
+  <div class="section">
+    <h2>Subir Publicación</h2>
+    <label>Categoría</label>
+    <select id="prodCat">
+      <option value="Hombre">Hombre</option>
+      <option value="Mujer">Mujer</option>
+      <option value="Niños">Niños</option>
+      <option value="Ofertas">Ofertas</option>
+    </select>
+    <label>Nombre</label>
+    <input id="prodName" type="text" placeholder="Nombre del producto">
+    <label>Descripción</label>
+    <input id="prodDesc" type="text" placeholder="Descripción del producto">
+    <label>Precio</label>
+    <input id="prodPrice" type="number" placeholder="Precio en $">
+    <label>¿En Oferta?</label>
+    <select id="prodSale">
+      <option value="true">Sí</option>
+      <option value="false">No</option>
+    </select>
+    <input id="prodFileInput" type="file" accept="image/*" style="display:none">
+    <button type="button" id="addProdFileBtn">➕ Agregar Imagen</button>
+    <div class="preview-list" id="prodPreview"></div>
+    <div class="progress-bar" id="prodProgress"><div class="progress-bar-inner" id="prodProgressInner"></div></div>
+    <button onclick="uploadProduct()">Subir Publicación</button>
+    <div id="prodFeedback"></div>
   </div>
-
-  <!-- Modal Detalle Producto -->
-  <div id="modalDetalle">
-    <div class="modal-contenido-detalle">
-      <span class="close-detalle" id="closeDetalle">×</span>
-      <div class="detalle-imagen-grande" id="detalleImagenGrande">
-        <div class="detalle-flecha prev" id="detallePrev">❮</div>
-        <img src="" alt="Detalle Producto" id="detalleImagen">
-        <div class="detalle-flecha next" id="detalleNext">❯</div>
-      </div>
-      <div class="miniaturas" id="miniaturasContainer"></div>
-      <div class="detalle-info" style="padding: 20px;">
-        <h3 id="detalleNombre" style="margin-bottom:8px;"></h3>
-        <p id="detalleDesc" style="margin-bottom:12px;"></p>
-        <div id="detallePrice" style="font-weight:700; font-size:1.2rem;"></div>
-        <input type="hidden" id="detalleCategory" value="">
-        <input type="hidden" id="detalleKey" value="">
-        <button id="reserveButton" style="margin-top:15px; padding:10px 15px; background:var(--brand); color:var(--white); border:none; border-radius:4px; cursor:pointer;">Reservar este producto</button>
-      </div>
-    </div>
+  <!-- Subir Slider -->
+  <div class="section">
+    <h2>Subir Imágenes para Slider</h2>
+    <input id="sliderInput" type="file" accept="image/*" multiple style="display:none">
+    <button type="button" onclick="sliderInput.click()">➕ Agregar Imagen Slider</button>
+    <div class="preview-list" id="sliderPreview"></div>
+    <div class="progress-bar" id="sliderProgress"><div class="progress-bar-inner" id="sliderProgressInner"></div></div>
+    <button onclick="uploadSlider()">Subir al Slider</button>
+    <div id="sliderFeedback"></div>
   </div>
-
-
-<div class="promo-overlay" id="promo-popup-overlay">
-      <div class="promo-content">
-          <button class="promo-close-btn" id="promo-close-btn">&times;</button>
-          <h3>¡Buenos dias!</h3>
-      
-          <img src="B.png" alt="Tomamos pedidos 📦" class="promo-img" id="promo-img">
-          </div>
+  <!-- Reservas -->
+  <div class="section">
+    <h2>Reservas</h2>
+    <div id="resList">Cargando reservas...</div>
   </div>
-
   <script type="module">
-    // Importaciones de Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-    import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+    import { getDatabase, ref, set, onValue, update, push, get } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+    import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-storage.js";
 
-    // Configuración de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyAhz1XoprhhrHyYfuAdIYGMJxm5UsDO-4",
       authDomain: "the-pic-c437e.firebaseapp.com",
@@ -661,335 +81,137 @@
       messagingSenderId: "750954597180",
       appId: "1:750954597180:web:fc586d73d852ed5e17ec39"
     };
-
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+    const storage = getStorage(app);
 
-    // Año actual en footer
-    document.getElementById('currentYear').textContent = new Date().getFullYear();
+    // PRODUCTOS
+    let prodFiles = [];
+    const prodFileInput = document.getElementById('prodFileInput');
+    const addProdFileBtn = document.getElementById('addProdFileBtn');
+    const prodPreview = document.getElementById('prodPreview');
+    const prodProgress = document.getElementById('prodProgress');
+    const prodProgressInner = document.getElementById('prodProgressInner');
+    const prodFeedback = document.getElementById('prodFeedback');
 
-    /* ===== HERO SLIDER ===== */
-    const slidesEl = document.getElementById('slidesContainer');
-    const nextSlideButton = document.getElementById('nextSlide');
-    const prevSlideButton = document.getElementById('prevSlide');
-    let currentSlideIndex = 0;
-    let totalSlides = 0;
-    let slideAutoPlayInterval;
-
-    function renderSlides(slideData) {
-      slidesEl.innerHTML = '';
-      let loaded = Array.isArray(slideData) ? slideData : (slideData ? Object.values(slideData) : []);
-      totalSlides = loaded.length;
-      if (totalSlides > 0) {
-        slidesEl.style.width = `${totalSlides * 100}%`;
-        loaded.forEach(item => {
-          const div = document.createElement('div');
-          div.className = 'slide';
-          div.style.backgroundImage = `url('${item.url}')`;
-          div.style.width = `${100 / totalSlides}%`; // Ajuste para que cada slide ocupe el espacio correcto
-          div.innerHTML = `<h1>${item.title || 'Nueva Colección'}</h1>`;
-          slidesEl.appendChild(div);
-        });
-        updateSliderTransform();
-        startSliderAutoplay();
-      } else {
-        slidesEl.style.width = '100%';
-        slidesEl.innerHTML = `<div class="slide" style="background-color: var(--gray-dark); width: 100%;"><h1>No hay slides disponibles</h1></div>`;
+    addProdFileBtn.addEventListener('click', () => prodFileInput.click());
+    prodFileInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (file) {
+        prodFiles.push(file);
+        const div = document.createElement('div'); div.textContent = file.name;
+        prodPreview.appendChild(div);
       }
-    }
-    function updateSliderTransform() {
-      slidesEl.style.transform = `translateX(-${currentSlideIndex * (100 / totalSlides)}%)`;
-    }
-    function moveSlide(dir) {
-      currentSlideIndex = (currentSlideIndex + dir + totalSlides) % totalSlides;
-      updateSliderTransform();
-    }
-    function startSliderAutoplay() {
-      clearInterval(slideAutoPlayInterval);
-      if (totalSlides > 1) slideAutoPlayInterval = setInterval(() => moveSlide(1), 5000);
-    }
-    nextSlideButton.addEventListener('click', () => { moveSlide(1); startSliderAutoplay(); });
-    prevSlideButton.addEventListener('click', () => { moveSlide(-1); startSliderAutoplay(); });
-    onValue(ref(db, 'slider'), snap => {
-      const data = snap.val();
-      console.log("Datos del slider:", data); // Para depurar
-      renderSlides(data);
-    }, err => {
-      console.error("Error cargando slides:", err);
-      slidesEl.innerHTML = `<div class="slide" style="background-color: var(--gray-dark); width: 100%;"><h1>Error al cargar slides</h1></div>`;
+      e.target.value = '';
     });
 
-    /* ===== PRODUCTOS + MODAL DETALLE ===== */
-    const productsContainer = document.getElementById('productsContainer');
-    const categories = ['Hombre','Mujer','Niños','Ofertas'];
-    const renderedCards = {};
+    window.uploadProduct = async () => {
+      prodFeedback.innerHTML = '';
+      const cat = document.getElementById('prodCat').value;
+      const name = document.getElementById('prodName').value.trim();
+      const desc = document.getElementById('prodDesc').value.trim();
+      const price = document.getElementById('prodPrice').value;
+      const sale = document.getElementById('prodSale').value === 'true';
+      if (!name || !price || prodFiles.length === 0) { prodFeedback.innerHTML = '<div class="error">Faltan datos</div>'; return; }
 
-    // Modal detalle refs
-    const modalDetalle = document.getElementById('modalDetalle');
-    const detalleImagen = document.getElementById('detalleImagen');
-    const detalleNombre = document.getElementById('detalleNombre');
-    const detalleDesc   = document.getElementById('detalleDesc');
-    const detallePrice  = document.getElementById('detallePrice');
-    const detallePrev   = document.getElementById('detallePrev');
-    const detalleNext   = document.getElementById('detalleNext');
-    const miniaturasContainer = document.getElementById('miniaturasContainer');
-    const closeDetalle = document.getElementById('closeDetalle');
-    let detalleImages = [], currentDetalleIndex = 0;
+      prodProgress.style.display = 'block'; prodProgressInner.style.width = '0%';
+      const urls = [];
+      for (let i=0; i<prodFiles.length; i++) {
+        const file = prodFiles[i];
+        const storageRef = sRef(storage, `productos/${cat}/${name}_${i}_${file.name}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+        urls.push(url);
+        prodProgressInner.style.width = `${((i+1)/prodFiles.length)*100}%`;
+      }
+      await set(ref(db, `productos/${cat}/${name}`), { category: cat, name, desc, price: parseFloat(price), images: urls, sale, reserved: false });
+      prodFeedback.innerHTML = '<div class="success">Publicación subida</div>';
+      prodFiles = []; prodPreview.innerHTML = ''; prodProgress.style.display = 'none';
+    };
 
-    function openDetalle(item, category, key, reserved) {
-      detalleImages = Array.isArray(item.images) && item.images.length
-        ? item.images
-        : [ item.url || 'https://via.placeholder.com/800' ];
-      currentDetalleIndex = 0;
-      detalleNombre.textContent = item.name;
-      detalleDesc.textContent   = item.desc;
-      detallePrice.textContent  = item.price ? '$'+Number(item.price).toLocaleString('es-AR') : 'Consultar';
-      document.getElementById('detalleCategory').value = category;
-      document.getElementById('detalleKey').value = key;
-      renderDetalle();
-      modalDetalle.classList.add('open');
-      const reserveButton = document.getElementById('reserveButton');
-      if (reserved) {
-        reserveButton.style.display = 'none';
-      } else {
-        reserveButton.style.display = 'block';
-        reserveButton.onclick = () => {
-          const name = document.getElementById('detalleNombre').textContent;
-          openModalReserva(category, key, name);
+    // SLIDER
+    let sliderFiles = [];
+    const sliderInput = document.getElementById('sliderInput');
+    const sliderPreview = document.getElementById('sliderPreview');
+    const sliderProgress = document.getElementById('sliderProgress');
+    const sliderProgressInner = document.getElementById('sliderProgressInner');
+    const sliderFeedback = document.getElementById('sliderFeedback');
+
+    sliderInput.addEventListener('change', e => {
+      Array.from(e.target.files).forEach(file => {
+        sliderFiles.push(file);
+        const div = document.createElement('div'); div.textContent = file.name;
+        sliderPreview.appendChild(div);
+      });
+      e.target.value = '';
+    });
+
+    window.uploadSlider = async () => {
+      sliderFeedback.innerHTML = '';
+      if (sliderFiles.length === 0) { sliderFeedback.innerHTML = '<div class="error">Selecciona imágenes</div>'; return; }
+      sliderProgress.style.display = 'block'; sliderProgressInner.style.width = '0%';
+      for (let i=0; i<sliderFiles.length; i++) {
+        const file = sliderFiles[i];
+        const storageRef = sRef(storage, `slider/${file.name}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+        await set(push(ref(db, 'slider')), { url });
+        sliderProgressInner.style.width = `${((i+1)/sliderFiles.length)*100}%`;
+      }
+      sliderFeedback.innerHTML = '<div class="success">Slider actualizado</div>';
+      sliderFiles = []; sliderPreview.innerHTML = ''; sliderProgress.style.display = 'none';
+    };
+
+    // RESERVAS
+    const resList = document.getElementById('resList');
+    onValue(ref(db, 'reservas'), snapshot => {
+      resList.innerHTML = '';
+      const data = snapshot.val() || {};
+      Object.entries(data).forEach(([id, r]) => {
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        div.innerHTML = `
+          <p><strong>Nombre:</strong> ${r.customerName}</p>
+          <p><strong>Teléfono:</strong> ${r.customerPhone}</p>
+          <p><strong>Email:</strong> ${r.customerEmail}</p>
+          <p><strong>Estado:</strong> ${r.status || 'pendiente'}</p>
+          <p class="product-info"><strong>Producto:</strong> Cargando...</p>
+        `;
+
+        // Obtener información del producto
+        const productRef = ref(db, `productos/${r.productCategory}/${r.productKey}`);
+        get(productRef).then(productSnapshot => {
+          const productData = productSnapshot.val();
+          const productInfo = div.querySelector('.product-info');
+          if (productData) {
+            productInfo.innerHTML = `
+              <strong>Producto:</strong> ${productData.name}<br>
+              <strong>Descripción:</strong> ${productData.desc || 'Sin descripción'}<br>
+              <strong>Precio:</strong> $${productData.price}<br>
+              <strong>En Oferta:</strong> ${productData.sale ? 'Sí' : 'No'}
+            `;
+          } else {
+            productInfo.textContent = 'Producto no encontrado';
+          }
+        }).catch(error => {
+          console.error('Error al obtener el producto:', error);
+          div.querySelector('.product-info').textContent = 'Error al cargar el producto';
+        });
+
+        const btn = document.createElement('button');
+        btn.className = 'mark-comprado-btn';
+        btn.textContent = r.status === 'comprada' ? 'Comprada' : 'Marcar como Comprada';
+        btn.disabled = r.status === 'comprada';
+        btn.onclick = async () => {
+          await update(ref(db, `reservas/${id}`), { status: 'comprada' });
+          await update(ref(db, `productos/${r.productCategory}/${r.productKey}`), { reserved: true });
+          btn.textContent = 'Comprada';
+          btn.disabled = true;
         };
-      }
-    }
-    function renderDetalle() {
-      detalleImagen.src = detalleImages[currentDetalleIndex];
-      miniaturasContainer.innerHTML = '';
-      detalleImages.forEach((src, idx) => {
-        const img = document.createElement('img');
-        img.src = src;
-        if (idx === currentDetalleIndex) img.classList.add('selected');
-        img.addEventListener('click', () => { currentDetalleIndex = idx; renderDetalle(); });
-        miniaturasContainer.appendChild(img);
+        div.appendChild(btn);
+        resList.appendChild(div);
       });
-    }
-    detallePrev.addEventListener('click', () => {
-      currentDetalleIndex = (currentDetalleIndex - 1 + detalleImages.length) % detalleImages.length;
-      renderDetalle();
     });
-    detalleNext.addEventListener('click', () => {
-      currentDetalleIndex = (currentDetalleIndex + 1) % detalleImages.length;
-      renderDetalle();
-    });
-    closeDetalle.addEventListener('click', () => modalDetalle.classList.remove('open'));
-    modalDetalle.addEventListener('click', e => {
-      if (e.target === modalDetalle) modalDetalle.classList.remove('open');
-    });
-
-    function renderSingleProduct(category, key, item) {
-      const card = document.createElement('div');
-      card.className = 'card';
-      let badge = '';
-      if (item.reserved) badge = '<div class="badge reserved">Comprado</div>';
-      else if (item.sale) badge = '<div class="badge">Sale</div>';
-      const imgSrc = Array.isArray(item.images) && item.images.length ? item.images[0] : item.url || 'https://via.placeholder.com/300';
-      card.innerHTML = `
-        ${badge}
-        <img src="${imgSrc}" alt="${item.name}">
-        <div class="info">
-          <h3>${item.name||'Producto'}</h3>
-          <p>${item.desc||'Descripción no disponible.'}</p>
-          <div class="price">${item.price? '$'+Number(item.price).toLocaleString('es-AR'):'Consultar'}</div>
-        </div>
-      `;
-      if (!item.reserved) {
-        card.style.cursor = 'pointer';
-        card.addEventListener('click', () => openDetalle(item, category, key, item.reserved));
-      }
-      return card;
-    }
-
-    categories.forEach(cat => {
-      onValue(ref(db, `productos/${cat}`), snap => {
-        const data = snap.val() || {};
-        Object.keys(data).forEach(key => {
-          const item = data[key];
-          const id = `${cat}-${key}`;
-          const newCard = renderSingleProduct(cat, key, item);
-          if (renderedCards[id]) {
-            productsContainer.replaceChild(newCard, renderedCards[id]);
-          } else {
-            productsContainer.appendChild(newCard);
-          }
-          renderedCards[id] = newCard;
-        });
-      }, err => console.error(`Error cargando productos de ${cat}:`, err));
-    });
-
-    /* ===== MODAL RESERVA ===== */
-    const modalReserva = document.getElementById('modalReserva');
-    const closeModalReservaButton = document.getElementById('closeModalReservaButton');
-    const reservationForm = document.getElementById('reservationForm');
-    const modalReservaTitleEl = document.getElementById('modalReservaTitle');
-    const resProductCategoryInput = document.getElementById('resProductCategory');
-    const resProductKeyInput = document.getElementById('resProductKey');
-    const resProductNameInputHidden = document.getElementById('resProductNameInput');
-    const resNameInput = document.getElementById('resName');
-    const resPhoneInput = document.getElementById('resPhone');
-    const resEmailInput = document.getElementById('resEmail');
-
-    window.openModalReserva = function(category, productKey, productName) {
-      modalDetalle.classList.remove('open'); // Cerrar modal de detalle
-      modalReservaTitleEl.innerText = `Reservar: ${productName}`;
-      resProductCategoryInput.value = category;
-      resProductKeyInput.value = productKey;
-      resProductNameInputHidden.value = productName;
-      reservationForm.reset();
-      modalReserva.classList.add('open');
-    };
-
-    function closeModalReserva() {
-      modalReserva.classList.remove('open');
-    }
-    closeModalReservaButton.onclick = closeModalReserva;
-    modalReserva.addEventListener('click', e => {
-      if (e.target === modalReserva) closeModalReserva();
-    });
-
-    reservationForm.onsubmit = async function(event) {
-      event.preventDefault();
-      const productCategory = resProductCategoryInput.value;
-      const productKey = resProductKeyInput.value;
-      const productName = resProductNameInputHidden.value;
-      const customerName = resNameInput.value.trim();
-      const customerPhone = resPhoneInput.value.trim();
-      const customerEmail = resEmailInput.value.trim();
-
-      if (!customerName || !customerPhone || !customerEmail) {
-        alert('Por favor, completa todos los campos: Nombre, Teléfono y Correo.');
-        return;
-      }
-      if (!customerEmail.includes('@') || !customerEmail.includes('.')) {
-        alert('Por favor, ingresa un correo electrónico válido.');
-        return;
-      }
-      if (!/^[0-9\s+()-]*$/.test(customerPhone)) {
-        alert('Por favor, ingresa un número de teléfono válido.');
-        return;
-      }
-
-      const submitButton = reservationForm.querySelector('button[type="submit"]');
-      submitButton.disabled = true;
-
-      try {
-        await push(ref(db, 'reservas/'), {
-          productCategory,
-          productKey,
-          productName,
-          customerName,
-          customerPhone,
-          customerEmail,
-          timestamp: Date.now(),
-          status: 'pendiente'
-        });
-        closeModalReserva();
-        alert('¡Reserva solicitada con éxito! Nos pondremos en contacto contigo pronto.');
-      } catch (error) {
-        console.error("Error al guardar la reserva:", error);
-        alert('Hubo un error al procesar tu reserva. Por favor, intenta de nuevo.');
-      } finally {
-        submitButton.disabled = false;
-      }
-    };
-
-    /* ===== MENÚ HAMBURGUESA ===== */
-    const menuToggle = document.querySelector('.menu-toggle');
-    const menu = document.getElementById('menu');
-
-    menuToggle.addEventListener('click', () => {
-      menu.classList.toggle('open');
-    });
-    
-    
-    
-    
-    
-        // Script para el efecto de scroll (animar al entrar en la vista)
-    document.addEventListener('DOMContentLoaded', () => {
-      const containers = document.querySelectorAll('.container, .hero');
-      
-      const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            // observer.unobserve(entry.target); // Descomentar si solo quieres que se anime una vez
-          } else {
-            // Opcional: para que la animación se reinicie al salir y volver a entrar
-            // entry.target.classList.remove('is-visible');
-          }
-        });
-      }, {
-        threshold: 0.1 // Porcentaje del elemento visible para disparar el evento
-      });
-      
-      containers.forEach(container => {
-        // Si el elemento ya es visible al cargar la página, añádele la clase 'is-visible' inmediatamente
-        const rect = container.getBoundingClientRect();
-        if (rect.top < window.innerHeight && rect.bottom >= 0) {
-          container.classList.add('is-visible');
-        } else {
-          observer.observe(container);
-        }
-      });
-      
-      // Cerrar el menú al hacer clic en un enlace (útil en móvil)
-      const navLinks = document.querySelectorAll('#nav-list a');
-      navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-          const navList = document.getElementById('nav-list');
-          if (navList.classList.contains('show')) {
-            navList.classList.remove('show');
-          }
-        });
-      });
-      
-      
-      // --- Lógica para el Pop-up de Publicidad ---
-      const promoOverlay = document.getElementById('promo-popup-overlay');
-      const promoImg = document.getElementById('promo-img');
-      const promoCloseBtn = document.getElementById('promo-close-btn');
-      
-      // Mostrar el pop-up al cargar la página (puede añadir un pequeño retraso si lo desea)
-      // setTimeout(() => { promoOverlay.classList.add('visible'); }, 500); // Ejemplo con retraso
-      promoOverlay.classList.add('visible'); // Mostrar inmediatamente
-      
-      // Cuando la imagen dentro del pop-up haya cargado...
-      promoImg.addEventListener('load', () => {
-        // Activar el botón de cierre
-        promoCloseBtn.classList.add('active');
-        // Añadir el event listener al botón de cierre
-        promoCloseBtn.addEventListener('click', () => {
-          promoOverlay.classList.remove('visible'); // Ocultar el pop-up
-          // Opcional: Eliminar el overlay del DOM después de un tiempo si no se va a reutilizar
-          // setTimeout(() => { promoOverlay.remove(); }, 300); // Espera a que termine la transición CSS
-        });
-      });
-      
-      // Manejar error de carga de imagen (opcional: si la imagen no carga, igual permitir cerrar)
-      promoImg.addEventListener('error', () => {
-        console.warn("Error loading promotional image. Close button will still be activated.");
-        promoCloseBtn.classList.add('active');
-        promoCloseBtn.addEventListener('click', () => {
-          promoOverlay.classList.remove('visible');
-        });
-      });
-      
-      // Si la imagen ya está en caché, el evento 'load' podría no dispararse.
-      // Comprobamos si ya está completa al momento de añadir el listener.
-      if (promoImg.complete) {
-        promoImg.dispatchEvent(new Event('load')); // Disparar el evento load manualmente
-      }
-      // --- Fin Lógica Pop-up ---
-      
-    });
-    
   </script>
 </body>
 </html>
