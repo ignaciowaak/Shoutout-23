@@ -63,7 +63,7 @@
     }
     nav a:hover { opacity:.7; }
 
-    @media (max-width: 768px) {
+    @media (max-width: 600px) {
       .menu-toggle {
         display: block;
       }
@@ -161,14 +161,20 @@
       margin: 40px 20px 20px; 
       color: var(--gray-dark); 
     }
-    .products {
-      max-width:3000px; 
-      margin:0 auto 40px auto; 
-      padding:0 20px;
-      display:grid; 
-      gap:25px; 
-      grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); /* Reducido de 250px a 200px */
-    }
+.products {
+  /* quita o sube mucho este max-width */
+  /* max-width: 180px; */
+
+  width: 100%;             /*  o un max-width mucho mayor */
+  margin: 0 auto 30px;
+  padding: 0 10px;
+
+  display: grid;
+  gap: 10px;
+
+  /* Dos columnas iguales */
+  grid-template-columns: repeat(2, 1fr);
+}
     .card {
       position:relative; 
       border:1px solid #e8e8e8; 
